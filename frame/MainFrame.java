@@ -64,19 +64,12 @@ public class MainFrame {
 			rotor3PositionSpinner.setValue(currentPos[2]);
 		}
 
-		private String processKeyDown(char keyChar) {
-			String res = machine.encrypt(String.valueOf(keyChar));
-			if (!res.equals(" ")) {
-				updateSpinners();
-			}
-
-			return res;
-		}
-
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (isValidChar(e.getKeyChar())) {
-				resultTextField.setText(resultTextField.getText()+processKeyDown(e.getKeyChar()));
+				String res = machine.encrypt(String.valueOf(e.getKeyChar()));
+				updateSpinners();
+				resultTextField.setText(resultTextField.getText()+res);
 			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
 				if (resultTextField.getText().length() > 0) {
 					char c = resultTextField.getText().charAt(resultTextField.getText().length() - 1);
@@ -92,12 +85,17 @@ public class MainFrame {
 			} else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
 				try{
 					String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-					StringBuilder sb = new StringBuilder();
-					for (char c : data.toCharArray()) {
-						sb.append(processKeyDown(c));
-					}
-					resultTextField.setText(resultTextField.getText()+sb);
+					if (data == null || data.isEmpty())
+						return;
 
+//					StringBuilder sb = new StringBuilder();
+//					for (char c : data.toCharArray()) {
+//						sb.append(processKeyDown(c));
+//					}
+
+					String newEncrypted = machine.encrypt(data);
+					updateSpinners();
+					resultTextField.setText(resultTextField.getText()+newEncrypted);
 				} catch (UnsupportedFlavorException | IOException ignore) {
 					// ignore
 				}
