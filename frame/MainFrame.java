@@ -1,10 +1,7 @@
 package frame;
 
 import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
@@ -22,8 +19,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.JLabel;
 import java.awt.Font;
 import javax.swing.JButton;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,9 +57,6 @@ public class MainFrame {
 	
 	private class FrameKeyListener implements KeyListener{
 
-		private boolean keyPressed = false;
-		private KeyEvent pressedKey;
-		
 		private void updateSpinners() {
 			int[] currentPos = machine.getRotorPositions();
 			rotor1PositionSpinner.setValue(currentPos[0]);
@@ -74,26 +66,63 @@ public class MainFrame {
 		
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if(!keyPressed && isValidChar(e.getKeyChar())) {
-				pressedKey = e;
-				keyPressed = true;
+			if (isValidChar(e.getKeyChar())) {
 				String res = machine.encrypt(String.valueOf(e.getKeyChar()));
-				updateSpinners();
-				// UPDATE TEXT FIELD
+				if (!res.equals(" ")) {
+					updateSpinners();
+				}
 				resultTextField.setText(resultTextField.getText()+res);
+			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
+				if (resultTextField.getText().length() > 0) {
+					char c = resultTextField.getText().charAt(resultTextField.getText().length() - 1);
+					if (c != ' ') {
+						if (machine.rollbackRotors()) {
+							updateSpinners();
+							resultTextField.setText(resultTextField.getText().substring(0, resultTextField.getText().length() - 1));
+						}
+					} else {
+						resultTextField.setText(resultTextField.getText().substring(0, resultTextField.getText().length() - 1));
+					}
+				}
 			}
 		}
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			if(pressedKey != null && e.getKeyCode() == pressedKey.getKeyCode()) {
-				keyPressed = false;
-			}
+
 		}
 
 		@Override
 		public void keyTyped(KeyEvent e) {
 			//NOT USED
+		}
+	}
+
+	private class FocusRequestMouseListener implements MouseListener {
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			frame.requestFocus();
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+
 		}
 	}
 	
@@ -150,7 +179,7 @@ public class MainFrame {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setTitle("Enigma Sim Len Gardaþým");
+		frame.setTitle("Enigma Sim silme eklendi sÄ±cak sÄ±cak");
 		frame.setBounds(100, 100, 568, 420);
 		frame.setFocusable(true);
 		frame.addKeyListener(new FrameKeyListener());
@@ -159,7 +188,9 @@ public class MainFrame {
 		JPanel panel = new JPanel();
 		frame.getContentPane().add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
-		
+
+
+
 		// TOP PANEL
 		
 		ComboBoxOnChangeListener comboListener = new ComboBoxOnChangeListener();
@@ -202,7 +233,7 @@ public class MainFrame {
 		panel.add(rotor1Specifier);
 		
 		rotor1SelectorComboBox = new JComboBox<RotorName>();
-		rotor1SelectorComboBox.setModel(new DefaultComboBoxModel(RotorName.values()));
+		rotor1SelectorComboBox.setModel(new DefaultComboBoxModel<>(RotorName.values()));
 		rotor1SelectorComboBox.setSelectedIndex(2);
 		rotor1SelectorComboBox.setBounds(419, 38, 109, 22);
 		rotor1SelectorComboBox.addActionListener(comboListener);
@@ -232,28 +263,30 @@ public class MainFrame {
 		panel.add(textField_1);
 		
 		SpinnerOnChangeListener listener = new SpinnerOnChangeListener();
-		
+
 		rotor1PositionSpinner = new JSpinner();
-		rotor1PositionSpinner.setModel(new SpinnerNumberModel(0,0,26,1));
+		rotor1PositionSpinner.setModel(new SpinnerNumberModel(0,0,25,1));
 		rotor1PositionSpinner.setBounds(473, 73, 55, 22);
 		rotor1PositionSpinner.addChangeListener(listener);
 		((JSpinner.DefaultEditor)rotor1PositionSpinner.getEditor()).getTextField().setEditable(false);
 		panel.add(rotor1PositionSpinner);
 		
 		rotor2PositionSpinner = new JSpinner();
-		rotor2PositionSpinner.setModel(new SpinnerNumberModel(0,0,26,1));
+		rotor2PositionSpinner.setModel(new SpinnerNumberModel(0,0,25,1));
 		rotor2PositionSpinner.setBounds(270, 73, 55, 22);
 		rotor2PositionSpinner.addChangeListener(listener);
 		((JSpinner.DefaultEditor)rotor2PositionSpinner.getEditor()).getTextField().setEditable(false);
 		panel.add(rotor2PositionSpinner);
 		
 		rotor3PositionSpinner = new JSpinner();
-		rotor3PositionSpinner.setModel(new SpinnerNumberModel(0, 0, 26, 1));
+		rotor3PositionSpinner.setModel(new SpinnerNumberModel(0, 0, 25, 1));
 		rotor3PositionSpinner.setBounds(76, 73, 55, 22);
 		rotor3PositionSpinner.addChangeListener(listener);
 		((JSpinner.DefaultEditor)rotor3PositionSpinner.getEditor()).getTextField().setEditable(false);
 		panel.add(rotor3PositionSpinner);
-		
+
+		FocusRequestMouseListener focusRequestMouseListener = new FocusRequestMouseListener();
+
 		// OUTPUT AREA
 		
 		resultTextField = new JTextField();
@@ -262,9 +295,11 @@ public class MainFrame {
 		resultTextField.setBounds(22, 151, 506, 50);
 		panel.add(resultTextField);
 		resultTextField.setColumns(10);
+
+		resultTextField.addMouseListener(focusRequestMouseListener);
 		
-		JLabel lblEncryprtedText = new JLabel("Encryprted Text");
-		lblEncryprtedText.setBounds(22, 122, 109, 16);
+		JLabel lblEncryprtedText = new JLabel("Encrypted Text");
+		lblEncryprtedText.setBounds(22, 122, 100, 16);
 		panel.add(lblEncryprtedText);
 		
 		lblPlugboard = new JLabel("Plugboard");
@@ -307,6 +342,9 @@ public class MainFrame {
 				frame.requestFocus();
 			}
 		});
+
+		frame.addMouseListener(focusRequestMouseListener);
+
 		btnChangeWirings.setBounds(401, 335, 137, 25);
 		panel.add(btnChangeWirings);
 		
@@ -372,7 +410,7 @@ public class MainFrame {
 	 */
 	private boolean isValidChar(char c) {
 		c = Character.toUpperCase(c);
-		return "ABCDEFGHIJKLMNOPQRSTUVWXYZ".contains(String.valueOf(c));
+		return "ABCDEFGHIJKLMNOPQRSTUVWXYZ ".contains(String.valueOf(c));
 	}
 	
 }

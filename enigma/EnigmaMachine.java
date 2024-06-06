@@ -69,7 +69,9 @@ public class EnigmaMachine {
 		output = rotor2.getOutput(output, true);
 		output = rotor1.getOutput(output, true);
 		output = plugBoard.runThrough(output);
-		moveRotors();
+		if (output != ' ')
+			moveRotors();
+
 		return output;
 	}
 	
@@ -86,10 +88,26 @@ public class EnigmaMachine {
 			}
 		}
 	}
+
+	public boolean rollbackRotors() {
+
+		if (rotor1.getPosition() == 0 && rotor2.getPosition() == 0 && rotor3.getPosition() == 0)
+			return false;
+
+		rotor1.decrementPosition();
+		if (rotor1.checkFullRev()) {
+			rotor2.decrementPosition();
+			if(rotor2.checkFullRev()) {
+				rotor3.decrementPosition();
+				rotor3.checkFullRev();
+			}
+		}
+
+		return true;
+	}
 	
 	public int[] getRotorPositions() {
-		int[] ret =  {rotor1.getPosition(), rotor2.getPosition(), rotor3.getPosition()};
-		return ret;
+		return new int[]{rotor1.getPosition(), rotor2.getPosition(), rotor3.getPosition()};
 	}
 	
 	public void setRotorPositions(int pos1, int pos2, int pos3) {

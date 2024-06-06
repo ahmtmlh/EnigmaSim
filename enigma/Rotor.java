@@ -65,6 +65,15 @@ public class Rotor {
 		}
 	}
 
+	public void decrementPosition() {
+		position--;
+		fullTurn = false;
+		if (position == -1) {
+			position = config.length - 1;
+			fullTurn = true;
+		}
+	}
+
 	/**
 	 * Get the correct character for the given character, from the configuration of
 	 * this rotor.
@@ -74,6 +83,9 @@ public class Rotor {
 	 */
 	
 	public char getOutput(char c, boolean backwards) {
+		if (c == ' ')
+			return c;
+
 		if(backwards) {
 			c = Character.toUpperCase(c);
 			int idx = 0;
@@ -110,6 +122,10 @@ public class Rotor {
 	
 	public void setPosition(int position) {
 		this.position = position;
+		if (this.position < 0)
+			this.position = 0;
+		else if (this.position >= config.length)
+			this.position = config.length - 1;
 	}
 	
 	@Override

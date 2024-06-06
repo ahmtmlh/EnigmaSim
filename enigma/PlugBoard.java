@@ -52,9 +52,9 @@ public class PlugBoard {
 	 */
 	public char runThrough(char c) {
 		char retVal = c;
-		for (int i = 0; i < wirings.length; i++) {
-			if(wirings[i][0] == c || wirings[i][1] == c) {
-				retVal = (c == wirings[i][0]) ? wirings[i][1] : wirings[i][0];
+		for (char[] wiring : wirings) {
+			if (wiring[0] == c || wiring[1] == c) {
+				retVal = (c == wiring[0]) ? wiring[1] : wiring[0];
 			}
 		}
 		return retVal;
