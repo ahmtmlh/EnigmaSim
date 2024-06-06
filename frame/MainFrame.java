@@ -1,14 +1,14 @@
 package frame;
 
-import java.awt.EventQueue;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JComboBox;
-import java.awt.Color;
 import javax.swing.DefaultComboBoxModel;
 import enigma.RotorName;
 import enigma.EnigmaMachine;
@@ -17,8 +17,8 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.JLabel;
-import java.awt.Font;
 import javax.swing.JButton;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -63,15 +63,20 @@ public class MainFrame {
 			rotor2PositionSpinner.setValue(currentPos[1]);
 			rotor3PositionSpinner.setValue(currentPos[2]);
 		}
-		
+
+		private String processKeyDown(char keyChar) {
+			String res = machine.encrypt(String.valueOf(keyChar));
+			if (!res.equals(" ")) {
+				updateSpinners();
+			}
+
+			return res;
+		}
+
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (isValidChar(e.getKeyChar())) {
-				String res = machine.encrypt(String.valueOf(e.getKeyChar()));
-				if (!res.equals(" ")) {
-					updateSpinners();
-				}
-				resultTextField.setText(resultTextField.getText()+res);
+				resultTextField.setText(resultTextField.getText()+processKeyDown(e.getKeyChar()));
 			} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE) {
 				if (resultTextField.getText().length() > 0) {
 					char c = resultTextField.getText().charAt(resultTextField.getText().length() - 1);
@@ -83,6 +88,18 @@ public class MainFrame {
 					} else {
 						resultTextField.setText(resultTextField.getText().substring(0, resultTextField.getText().length() - 1));
 					}
+				}
+			} else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
+				try{
+					String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+					StringBuilder sb = new StringBuilder();
+					for (char c : data.toCharArray()) {
+						sb.append(processKeyDown(c));
+					}
+					resultTextField.setText(resultTextField.getText()+sb);
+
+				} catch (UnsupportedFlavorException | IOException ignore) {
+					// ignore
 				}
 			}
 		}
