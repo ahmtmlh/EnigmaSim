@@ -4,7 +4,8 @@ public class Rotor {
 
 	private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	
-	private int[] config;
+	private final int[] config;
+	private static final char[] whiteList = ".,*_?: ".toCharArray();
 	private int position;
 	private boolean fullTurn;
 	
@@ -41,8 +42,9 @@ public class Rotor {
 		for (int i = 0; i < alphabet.length; i++) {
 			this.config[(int)(alphabet[i]-65)] = (code[i]-65);
 		}
+
 	}
-	
+
 	public Rotor() {
 		this.position = 0;
 		this.fullTurn = false;
@@ -74,6 +76,15 @@ public class Rotor {
 		}
 	}
 
+	public static boolean checkWhiteListChar(char c) {
+		for(char whiteListChar : whiteList) {
+			if (c == whiteListChar)
+				return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Get the correct character for the given character, from the configuration of
 	 * this rotor.
@@ -83,7 +94,7 @@ public class Rotor {
 	 */
 	
 	public char getOutput(char c, boolean backwards) {
-		if (c == ' ')
+		if (checkWhiteListChar(c))
 			return c;
 
 		if(backwards) {

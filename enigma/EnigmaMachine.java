@@ -69,7 +69,8 @@ public class EnigmaMachine {
 		output = rotor2.getOutput(output, true);
 		output = rotor1.getOutput(output, true);
 		output = plugBoard.runThrough(output);
-		if (output != ' ')
+
+		if (!Rotor.checkWhiteListChar(output))
 			moveRotors();
 
 		return output;
