@@ -83,17 +83,23 @@ public class MainFrame {
 					if (checkRotors)
 						updateSpinners();
 				}
-			} else if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
-				try{
-					String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-					if (data == null || data.isEmpty())
-						return;
+			} else if (e.isControlDown()) {
 
-					String newEncrypted = machine.encrypt(data);
-					updateSpinners();
-					resultTextField.setText(resultTextField.getText()+newEncrypted);
-				} catch (UnsupportedFlavorException | IOException ignore) {
-					// ignore
+				if (e.getKeyCode() == KeyEvent.VK_V) {
+					try {
+						String data = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+						if (data == null || data.isEmpty())
+							return;
+
+						String newEncrypted = machine.encrypt(data);
+						updateSpinners();
+						resultTextField.setText(resultTextField.getText() + newEncrypted);
+					} catch (UnsupportedFlavorException | IOException ignore) {
+						// ignore
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_A) {
+					resultTextField.selectAll();
+					resultTextField.requestFocus();
 				}
 			}
 		}
@@ -208,7 +214,7 @@ public class MainFrame {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("Enigma Sim silme eklendi sıcak sıcak");
-		frame.setBounds(100, 100, 568, 420);
+		frame.setBounds(100, 100, 570, 420);
 		frame.setFocusable(true);
 		frame.addKeyListener(new FrameKeyListener());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -230,17 +236,19 @@ public class MainFrame {
 		rotor3Specifier = new JTextField();
 		rotor3Specifier.setBackground(Color.WHITE);
 		rotor3Specifier.setEditable(false);
-		rotor3Specifier.setText("         Rotor 3");
+		rotor3Specifier.setText("Rotor 3");
 		rotor3Specifier.setBounds(22, 13, 125, 22);
+		rotor3Specifier.setHorizontalAlignment(JTextField.CENTER);
 		panel.add(rotor3Specifier);
 		rotor3Specifier.setColumns(10);
 		
 		rotor2Specifier = new JTextField();
-		rotor2Specifier.setText("         Rotor 2");
+		rotor2Specifier.setText("Rotor 2");
 		rotor2Specifier.setEditable(false);
 		rotor2Specifier.setColumns(10);
 		rotor2Specifier.setBackground(Color.WHITE);
 		rotor2Specifier.setBounds(206, 13, 125, 22);
+		rotor2Specifier.setHorizontalAlignment(JTextField.CENTER);
 		panel.add(rotor2Specifier);
 		
 		rotor2SelectorComboBox = new JComboBox<>();
@@ -251,11 +259,12 @@ public class MainFrame {
 		panel.add(rotor2SelectorComboBox);
 		
 		rotor1Specifier = new JTextField();
-		rotor1Specifier.setText("         Rotor 1");
+		rotor1Specifier.setText("Rotor 1");
 		rotor1Specifier.setEditable(false);
 		rotor1Specifier.setColumns(10);
 		rotor1Specifier.setBackground(Color.WHITE);
 		rotor1Specifier.setBounds(399, 13, 125, 22);
+		rotor1Specifier.setHorizontalAlignment(JTextField.CENTER);
 		panel.add(rotor1Specifier);
 		
 		rotor1SelectorComboBox = new JComboBox<>();
@@ -376,7 +385,7 @@ public class MainFrame {
 
 		frame.addMouseListener(focusRequestMouseListener);
 
-		btnChangeWirings.setBounds(401, 335, 137, 25);
+		btnChangeWirings.setBounds(391, 335, 137, 25);
 		panel.add(btnChangeWirings);
 		
 		lblWiringChangeStatus = new JLabel("");
@@ -396,8 +405,8 @@ public class MainFrame {
 			wiringTextFields[i].setText(texts[i]);
 			wiringTextFields[i].setBackground(Color.WHITE);
 			
-			wiringTextFields[i].setBounds(x, y, 85, 25);
-			x+=101;
+			wiringTextFields[i].setBounds(x, y, 90, 25);
+			x+=102;
 			if(x > 430) {
 				x = 22;
 				y += 40;
